@@ -1,3 +1,10 @@
+# [3.2.0](https://github.com/gameframex/com.gameframex.unity.asset/compare/3.1.1...3.2.0) (2026-09-11)
+
+
+### Features
+
+* **asset:** Web运行模式改为文件系统提供者适配机制 ([cdb142c](https://github.com/gameframex/com.gameframex.unity.asset/commit/cdb142c17783fb49e0571ccba025ceae5db03414))
+
 ## [3.1.1](https://github.com/gameframex/com.gameframex.unity.asset/compare/3.1.0...3.1.1) (2026-07-28)
 
 
