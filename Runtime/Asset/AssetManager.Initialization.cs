@@ -85,62 +85,26 @@ namespace GameFrameX.Asset.Runtime
         private InitializationOperation InitializeYooAssetWebPlayMode(ResourcePackage resourcePackage, string hostServerURL, string fallbackHostServerURL)
         {
             var initParameters = new WebPlayModeParameters();
+            var provider = WebPlayModeFileSystemProviderRegistry.Resolve();
             FileSystemParameters webFileSystem = null;
-#if UNITY_WEBGL
-#if ENABLE_DOUYIN_MINI_GAME
-            // https://developer.open-douyin.com/docs/resource/zh-CN/mini-game/develop/guide/performance-optimization-both/unity/startup/use-predownload-feature#ac640a2e
-            TTSDK.TT.PreloadConcurrent(10);
-            // 强行控制并发数量
-            GameEntry.GetComponent<AssetComponent>().gameObject.GetOrAddComponent<DouYinConfigHandler>();
-            // 创建字节小游戏文件系统
-            // https: //www.yooasset.com/docs/MiniGame#%E6%8A%96%E9%9F%B3%E5%B0%8F%E6%B8%B8%E6%88%8F
-            if (hostServerURL.IsNullOrWhiteSpace())
+            if (provider != null)
             {
-                webFileSystem = ByteGameFileSystemCreater.CreateByteGameFileSystemParameters();
+                // 渠道适配包注册的提供者生效（抖音/微信/快手/B站/支付宝/TapTap等小游戏）
+                Log.Info($"Web运行模式文件系统提供者：{provider.ChannelName}");
+                var context = new WebPlayModeProviderContext
+                {
+                    HostServerURL = hostServerURL,
+                    FallbackHostServerURL = fallbackHostServerURL,
+                };
+                webFileSystem = provider.CreateFileSystemParameters(context);
             }
-            else
+
+            if (webFileSystem == null)
             {
-                webFileSystem = ByteGameFileSystemCreater.CreateByteGameFileSystemParameters(hostServerURL);
+                // 未注册渠道提供者或提供者返回空时，创建默认WebGL文件系统
+                webFileSystem = FileSystemParameters.CreateDefaultWebFileSystemParameters();
             }
-#elif ENABLE_WECHAT_MINI_GAME
-            //https://www.yooasset.com/docs/MiniGame#%E5%BE%AE%E4%BF%A1%E5%B0%8F%E6%B8%B8%E6%88%8F
-            WeChatWASM.WXBase.PreloadConcurrent(10);
-            // 强行控制并发数量
-            GameEntry.GetComponent<AssetComponent>().gameObject.GetOrAddComponent<WeChatConfigHandler>();
-            string packageRoot = $"{WeChatWASM.WXBase.env.USER_DATA_PATH}/__GAME_FILE_CACHE/{YooAssetSettingsData.Setting.DefaultYooFolderName}";
-            // 创建微信小游戏文件系统
-            if (hostServerURL.IsNullOrWhiteSpace())
-            {
-                webFileSystem = WechatFileSystemCreater.CreateWechatFileSystemParameters();
-            }
-            else
-            {
-                webFileSystem = WechatFileSystemCreater.CreateWechatPathFileSystemParameters(hostServerURL);
-            }
-#elif ENABLE_KUAISHOU_MINI_GAME
-            // https://open.kuaishou.com/miniGameDocs/gameDev/Unity/Launchability/AssetBundle.html
-#if !UNITY_EDITOR
-            KSWASM.KSBase.PreloadConcurrent(10);
-#endif
-            // 强行控制并发数量
-            GameEntry.GetComponent<AssetComponent>().gameObject.GetOrAddComponent<KuaiShouConfigHandler>();
-            // string packageRoot = $"{KSWASM.KSBase.env.USER_DATA_PATH}/__GAME_FILE_CACHE/{YooAssetSettingsData.Setting.DefaultYooFolderName}";
-            // 创建快手小游戏文件系统
-            if (hostServerURL.IsNullOrWhiteSpace())
-            {
-                webFileSystem = KuaiShouFileSystemCreater.CreateKuaiShouFileSystemParameters();
-            }
-            else
-            {
-                webFileSystem = KuaiShouFileSystemCreater.CreateKuaiShouPathFileSystemParameters(hostServerURL);
-            }
-#else
-            // 创建默认WebGL文件系统
-            webFileSystem = FileSystemParameters.CreateDefaultWebFileSystemParameters();
-#endif
-#else
-            webFileSystem = FileSystemParameters.CreateDefaultWebFileSystemParameters();
-#endif
+
             initParameters.WebFileSystemParameters = webFileSystem;
             return resourcePackage.InitializeAsync(initParameters);
         }

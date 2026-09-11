@@ -4,10 +4,7 @@
     "GameFrameX.Runtime",
     "GameFrameX.Event.Runtime",
     "YooAsset.Runtime",
-    "YooAsset",
-    "Wx",
-    "YooAsset.MiniGame",
-    "GameFrameX.Asset.YooAsset.Minigame.TikTok.Runtime"
+    "YooAsset"
   ],
   "rootNamespace": "GameFrameX.Asset.Runtime",
   "includePlatforms": [],
@@ -22,6 +19,7 @@
       "name": "com.tuyoogame.yooasset.minigame",
       "expression": "",
       "define": "ENABLE_GAME_FRAME_X_YOO_ASSET_MINI_GAME"
-    }],
+    }
+  ],
   "noEngineReferences": false
 }

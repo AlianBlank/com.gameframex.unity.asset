@@ -13,6 +13,9 @@ namespace GameFrameX.Asset.Runtime
             _ = typeof(Constant);
             _ = typeof(IAssetManager);
             _ = typeof(AssetComponent);
+            _ = typeof(IWebPlayModeFileSystemProvider);
+            _ = typeof(WebPlayModeFileSystemProviderRegistry);
+            _ = typeof(WebPlayModeProviderContext);
         }
     }
 }
